@@ -146,7 +146,7 @@ namespace ExchangeRateClient.ViewModel
 
         public MainViewModel()
         {
-            Currencies = new ObservableCollection<string> { "USD", "EUR", "RUB", "BTC" };
+            Currencies = new ObservableCollection<string> { "USD", "EUR", "RUB" };
             SelectedCurrency = Currencies[1];
             StartDate = DateTime.Today;
             EndDate = DateTime.Today;
