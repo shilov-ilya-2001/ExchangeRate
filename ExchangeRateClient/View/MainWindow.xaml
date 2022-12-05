@@ -4,11 +4,44 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:ExchangeRateClient"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Анализ курса валют" 
         Height="450" Width="800"
         ResizeMode="CanMinimize">
+    <Window.Resources>
+        <Style TargetType="DatePickerTextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="#343434"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="#dedede"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Background}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#565656"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,13 +49,37 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="15,10,10,0">
             <TextBlock Text="Начальная дата:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <DatePicker/>
+            <DatePicker SelectedDate="{Binding StartDate}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectedDateChanged">
+                        <i:InvokeCommandAction
+                            Command="{Binding ValidateStartDateCommand}"
+                            CommandParameter="{Binding StartDate}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </DatePicker>
             <TextBlock Text="Конечная дата:" VerticalAlignment="Center" Margin="15,0,5,0"/>
-            <DatePicker/>
+            <DatePicker SelectedDate="{Binding EndDate}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectedDateChanged">
+                        <i:InvokeCommandAction
+                            Command="{Binding ValidateEndDateCommand}"
+                            CommandParameter="{Binding EndDate}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>                
+            </DatePicker>
             <TextBlock Text="Валюта:" VerticalAlignment="Center" Margin="15,0,5,0"/>
-            <ComboBox Width="100"/>
-            <Button Content="Получить" Width="170" Margin="25,0,0,0" Background="Gray" Foreground="White"/>
+            <ComboBox Width="100" ItemsSource="{Binding Currencies}" SelectedItem="{Binding SelectedCurrency}"/>
+            <Button Content="Получить" Width="170" Margin="25,0,0,0" Style="{StaticResource ButtonStyle}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction
+                            Command="{Binding GetCurrencyDataCommand}"
+                            CommandParameter="{Binding SelectedCurrency}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
         </StackPanel>
-        <oxy:PlotView Grid.Row="1" Model="{Binding Model}" />
+        <oxy:PlotView Grid.Row="1" Model="{Binding MyModel}"/>
     </Grid>
 </Window>
